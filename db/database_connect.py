@@ -1,28 +1,33 @@
 import sqlalchemy
 import pandas as pd
-import logging
-from sqlalchemy.orm import sessionmaker
+#from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
+import os
 
-import sql.db_info as db_info #this file has the dbinfo:server,db,etc.
 #This class is to connect to the database
+# it should be run in an exception handler 
+#   - specifically catch 
 class DbCon:
     def __init__(self):
-            self.m_sServer = db_info.server
-            self.m_sDriver = db_info.driver
-            self.m_sDb = db_info.database
+            self.m_Server = os.environ['SERVER']
+            self.m_Driver = os.environ['DRIVER']
+            self.m_Db = os.environ['DATABASE']
+            self.m_Instance = os.getenv('INSTANCE', '')
+            self.m_UserName = None
+            self.m_Password = None
             self.m_bConnected = False
     def Connect(self):
-        self.create_engine()
-        #engine = sqlalchemy.create_engine('mssql+pyodbc://{}/{}?driver={}'.format(self.m_sServer, self.m_sDb, driver))
-        self.m_oConn = self.m_engine.raw_connection()
-        #self.m_oSession = Session(sessionmaker(bind=self.m_engine,autocommit=False))
-        Session = sessionmaker(bind=self.m_engine,autocommit=False)
-        self.m_oSession = Session()
-        self.m_bConnected = True
+        conn_str = f"mssql+pyodbc://@{self.m_Server}{self.m_Instance}/{self.m_Db}?driver={self.m_Driver}"
+        self.o_engine = create_engine(conn_str, fast_executemany=True)
+     #   s = 'mssql+pyodbc://@' + self.m_Server + '/' + self.m_Db + '?trusted_connection=yes&driver='+self.m_Driver
+      #  self.o_engine = sqlalchemy.create_engine(s)        #engine = sqlalchemy.create_engine('mssql+pyodbc://{}/{}?driver={}'.format(self.m_sServer, self.m_sDb, driver))
+        self.o_Conn = self.o_engine.connect()
+     #   self.o_Conn = self.o_engine.raw_connection()
 
-    def create_engine(self):
-        s = 'mssql+pyodbc://@' + self.m_sServer + '/' + self.m_sDb + '?trusted_connection=yes&driver='+self.m_sDriver
-        self.m_engine = sqlalchemy.create_engine(s)
+        self.m_bConnected = True
+        
+        self.o_Conn.execute(text("CREATE TABLE test"))
+
     def Disconnect(self):
         if self.m_bConnected:
             self.m_oConn.cursor().close()
