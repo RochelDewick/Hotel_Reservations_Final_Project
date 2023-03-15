@@ -11,25 +11,25 @@ class DBActions:
     dbConnect = None
 
     def __init__(self):
-        if self.isConnected == False:
-            self.isConnected = self.connect()
-            if self.isConnected:
-                self.Cursor = self.dbConnect.Cursor
+        if DBActions.isConnected == False:
+            DBActions.isConnected = self.connect()
+            if DBActions.isConnected:
+                DBActions.Cursor = self.dbConnect.Cursor
             else:
                 raise ConnectionError
             
     def connect(self):  
         try:
-            self.dbConnect = DbCon()
+            DBActions.dbConnect = DbCon()
         except KeyError:
             print(f"Missing database connection data in configuration file settings.ini")
             exit()
 
-        return self.dbConnect.Connect()
+        return DBActions.dbConnect.Connect()
           
 
     def create_tables_from_df(self, df_reservations):
-        engine = self.dbConnect.getEngine()
+        engine = DBActions.dbConnect.getEngine()
         table_guest_exists = sqlalchemy.inspect(engine).has_table("Guest")
         table_reservation_exists = sqlalchemy.inspect(engine).has_table("Reservation")
 
@@ -45,53 +45,38 @@ class DBActions:
                 else:
                     print("You have to choose Yes or No")    
         
-            self.Cursor.execute(text("""DROP TABLE IF EXISTS Reservation"""))
-            self.Cursor.execute(text("""DROP TABLE IF EXISTS Guest"""))
-            self.Cursor.commit()
+            DBActions.Cursor.execute(text("""DROP TABLE IF EXISTS Reservation"""))
+            DBActions.Cursor.execute(text("""DROP TABLE IF EXISTS Guest"""))
+            DBActions.Cursor.commit()
             
-    #   df_guests = self.split_df_reservations(df_reservations)
-        #db.insert_df(df_guests, "Guest")
-        #db.insert_df(df_reservations, "Reservation")
-
-    def split_df_reservations(df_reservations):
-        df_reservations.insert(0, 'ReservationId', range(0, 0 + len(df_reservations)))
+    #    self.split_df_reservations(df_reservations)
+    #self.insert_df(self.df_guests, "Guest")
+ #       self.insert_df(self.df_reservations, "Reservation")
+ 
+    def split_df_reservations(self, df_reservations):
+        self.df_reservations.insert(0, 'ReservationId', range(0, 0 + len(df_reservations)))
         #first arg len(df_reservations) instead of 0 untested. did this so GuestId is at end instead of beg.
-        df_reservations.insert(len(df_reservations.axes[1]), 'GuestId', range(0, 0 + len(df_reservations)))
-        df_guests = df_reservations[['GuestId', 'adults','children', 'babies', 'country']]
-        df_reservations = df_reservations.drop(columns=['adults','children', 'babies', 'country'])
-        return df_guests
+        self.df_reservations.insert(len(df_reservations.axes[1]), 'GuestId', range(0, 0 + len(df_reservations)))
+        self.df_guests = self.df_reservations[['GuestId', 'adults','children', 'babies', 'country']]
+        # the above insert on the dataframe works without reassigning
+        # however the drop below doesn't change the original and has to be reassigned
+        # why I don't know     
+        self.df_resrvations = self.df_reservations.drop(columns=['adults','children', 'babies', 'country'])
 
-    def ReadSqlQuery(self, sQuery):
-        if (self.m_bConnected == False):
-            print('Error: db found disconnected and will try to connect again while tryng to run a query')
-            self.Connect()
-            if (self.m_bConnected == False):
-                print('Error: db disconnected - reconnection failed')
-        df = pd.read_sql_query(sQuery,self.m_engine)
-        return df
-
-    def insert_df(conn, df_to_insert, s_table_name):
+    def insert_df(self, df_to_insert, s_table_name):
+        engine = DBActions.dbConnect.getEngine()
         #__init__() got multiple values for argument 'schema'
-        df_to_insert.to_sql(s_table_name, conn, if_exists='append', index=False, chunksize=1000) #,
-        conn.commit()
+        df_to_insert.to_sql(s_table_name, engine, if_exists='append', index=False, chunksize=1000) #,
+        DBActions.Cursor.commit()
         
-    def ReadSqlQuery(self, sQuery):
-        if (self.m_bConnected == False):
-            print('Error: db found disconnected and will try to connect again while tryng to run a query')
-            self.Connect()
-            if (self.m_bConnected == False):
-                print('Error: db disconnected while tryng to run a query')
-        df = pd.read_sql_query(sQuery,self.m_engine)
+    def df_query(self, query):
+        engine = DBActions.dbConnect.getEngine()
+        df = pd.read_sql_query(text(query),engine)
         return df
-
-    # the above is for dataframe
-    # general query below
-    # move both to another file?
-    #from sqlalchemy.sql import text
+    
+    def query(self, query):
+        return DBActions.Cursor.execute(text(query)).fetchall()
+ 
     #s = text("select students.name, students.lastname from students where students.name between :x and :y")
     #conn.execute(s, x = 'A', y = 'L').fetchall()
 
-    def insert_df(self, df_to_insert, s_table_name):
-        #__init__() got multiple values for argument 'schema'
-        df_to_insert.to_sql(s_table_name, con=self.m_engine, if_exists='append', index=False, chunksize=1000) #,
-        self.m_oConn.cursor().commit()
