@@ -10,7 +10,11 @@ def main():
 
 
     df = pd.DataFrame()
-    db = dbc.create_tables_from_df(df)
+ 
+    Db = dbc.DBActions()
+ 
+    Db.create_tables_from_df(df)
+  
 
     
 if __name__ == "__main__":

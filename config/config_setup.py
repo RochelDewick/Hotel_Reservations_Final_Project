@@ -16,7 +16,7 @@ def init_setup():
 
     for section in config.sections():
         for key, value in config.items(section):
-            os.environ[key] = value
+            os.environ[section+'_'+key] = value
             
     
 
