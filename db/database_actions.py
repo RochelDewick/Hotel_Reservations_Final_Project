@@ -22,8 +22,9 @@ class DBActions:
         try:
             DBActions.dbConnect = DbCon()
         except KeyError:
-            print(f"Missing database connection data in configuration file settings.ini")
-            exit()
+            raise Exception(f"Missing database connection data in configuration file settings.ini")
+        except Exception as e:
+            raise Exception(e)
 
         return DBActions.dbConnect.Connect()
           
