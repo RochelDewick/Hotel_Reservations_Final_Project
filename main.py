@@ -12,6 +12,7 @@ def main():
     df = pd.DataFrame()
  
     Db = dbc.DBActions()
+    print("Connected to database")
  
     Db.create_tables_from_df(df)
   
