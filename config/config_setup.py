@@ -7,7 +7,7 @@ def init_setup():
     basedir = path.abspath(os.getcwd())
     #load_dotenv(path.join(basedir, '.env'))
 
-    os.environ['PATH_BASE'] = basedir
+    os.environ['BASEPATH'] = basedir
 
     # Read local `config.ini` file.
     config = configparser.ConfigParser()   
