@@ -1,5 +1,4 @@
 from db.database_connect import DbCon
-#from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy import text
 import sqlalchemy
 import pandas as pd

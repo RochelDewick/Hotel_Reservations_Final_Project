@@ -46,7 +46,7 @@ class DbCon:
         instance = '' if not self.Instance else '\\'+self.Instance
         port = '' if not self.Port else ':'+self.Port
         server = self.Server + instance + port
-        #query = f"mssql+pyodbc://@{self.Server}{instance}{port}/{self.Db}?trusted_connection=yes&driver={self.Driver}"
+
         connection_string = (
             fr"Driver={self.Driver};"
             fr"Server={server};"
@@ -57,21 +57,12 @@ class DbCon:
             "mssql+pyodbc", 
             query={"odbc_connect": connection_string}
         )
-  #      connection_url = URL.create(
-  #  "mssql+pyodbc",
-  #  query={
-  #      "odbc_connect": f"DRIVER={{{self.Driver}}};SERVER={{{server}}};DATABASE={{{db}}};UID={{{user}}};PWD={{{password}}}"
-  #  }
-#)
- 
+  
         self.Engine = create_engine(connection_url, fast_executemany=True)
-        import urllib.parse
-        print(urllib.parse.unquote(repr(self.Engine.url)))
-        #exit()
-     #   s = 'mssql+pyodbc://@' + self.m_Server + '/' + self.m_Db + '?trusted_connection=yes&driver='+self.m_Driver
-      #  self.o_engine = sqlalchemy.create_engine(s)        #engine = sqlalchemy.create_engine('mssql+pyodbc://{}/{}?driver={}'.format(self.m_sServer, self.m_sDb, driver))
+        #import urllib.parse
+        #print(urllib.parse.unquote(repr(self.Engine.url)))
+  
         self.Cursor = self.Engine.connect()
-     #   self.o_Conn = self.o_engine.raw_connection()
 
         self.m_bConnected = True
         print("Succesfully connected.")
