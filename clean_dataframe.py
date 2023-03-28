@@ -52,4 +52,4 @@ hotel_bookings["company"].fillna(0.00, inplace=True)
 
 hotel_bookings.fillna(method = 'bfill', inplace=True)
 
-# print(hotel_bookings.head())
+print(hotel_bookings.head())

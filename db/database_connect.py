@@ -44,7 +44,7 @@ class DbCon:
         
     def Connect(self):
         instance = '' if not self.Instance else '\\'+self.Instance
-        port = '' if not self.Port else ':'+self.Port
+        port = '' if not self.Port else ','+self.Port
         server = self.Server + instance + port
 
         connection_string = (
@@ -52,6 +52,7 @@ class DbCon:
             fr"Server={server};"
             fr"Database={self.Db};"
             fr"Trusted_Connection=yes;"
+            fr"TrustServerCertificate=yes;"
         )
         connection_url = URL.create(
             "mssql+pyodbc", 

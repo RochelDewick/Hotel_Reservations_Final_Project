@@ -1,0 +1,9 @@
+class Guest:
+
+    def __init__(self, row):
+        self.GuestId = row["GuestId"]
+        self.adults = row["adults"]
+        self.children = row["children"]
+        self.babies = row["babies"]
+        self.country = row["country"]
+
