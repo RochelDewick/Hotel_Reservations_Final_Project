@@ -7,3 +7,9 @@ class Guest:
         self.babies = row["babies"]
         self.country = row["country"]
 
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
