@@ -79,5 +79,11 @@ class DBActions:
     
     def rawquery(self, qry):
         return DBActions.Cursor.execute(qry).fetchall()
+    
+    def query(sql):
+        db = DbCon()
+        db.Connect()
+        df_result = db.ReadSqlQuery(sql)
+        return df_result
  
 
